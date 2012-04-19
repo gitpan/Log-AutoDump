@@ -32,11 +32,11 @@ Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 $VERSION = eval $VERSION;
 
@@ -68,23 +68,23 @@ If the B<level> for the C<$log> object is set lower than B<warn>, the above log 
 
 But you have still C<Dumped> an entire data-structure, just in case.
 
-We take the B<dumping> process out of your hands.
+We take the dumping process out of your hands.
 
 The above statement becomes...
 
  $log->warn( "Some object:", $obj, "Did you like that?" );
 
-Which is easier to read/write for a start, but will also B<dump> the C<obj>.
+Which is easier to read/write for a start, but will also B<dump> the C<obj> by default.
 
-We use L<Data::Dumper> by default.
+Using L<Data::Dumper> unless specified.
 
-You can also control the C<$Data::Dumper::Maxdepth> by setting the C<dump_depth> attribute at construction time, and/or change it later.
+You can control the C<$Data::Dumper::Maxdepth> by setting the C<dump_depth> attribute at construction time, and/or change it later.
 
- $log = Log::AutoDump->new( dump_depth => 3 );
+ my $log = Log::AutoDump->new( dump_depth => 3 );
  
  $log->dump_depth( 1 );
 
-This is useful when dealing with some references/objects that may contain things like L<DateTime> objects, which are themselves huge.  
+This is useful when dealing with some references or objects that may contain things like L<DateTime> objects, which are themselves huge.  
 
 =cut
 
@@ -494,6 +494,8 @@ sub is_fatal
 =head1 TODO
 
 simple scripts (the caller stack)
+
+extend to use variations of Data::Dumper
 
 
 
