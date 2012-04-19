@@ -28,25 +28,27 @@ use constant MAX_FRAME => 10;
 
 =head1 NAME
 
-Log::AutoDump - Log with automatic dumping of references.
+Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
+
+$VERSION = eval $VERSION;
 
 =head1 SYNOPSIS
 
-Logging, with automatic dumping of references and objects.
+Logging as usual, but with automatic dumping of references and objects.
 
  use Log::AutoDump;
 
  my $log = Log::AutoDump->new;
     
- $log->msg(4, "Logging at level 4", $ref, $hashref );
+ $log->msg( 4, "Logging at level 4", $ref, $hashref );
 
  $log->warn( "Logging at warn level (2)", \@somelist, "Did you see that list?!" )
  
@@ -54,35 +56,35 @@ Logging, with automatic dumping of references and objects.
 
 =head1 DESCRIPTION
 
-When logging, it is common to want to dump a reference/object.
+When logging in development, it is common to dump a reference or object.
 
-However, when working with logging systems that employ the idea of "log-levels", you can quickly end up with expensive code.
+When working with logging systems that employ the idea of "log-levels", you can quickly end up with expensive code.
+
+For example...
 
  $log->warn( "Some object:", Dumper( $obj ), "Did you like that?" );
 
-If the C<level> for the C<$log> object is set lower than C<warn>, the above log statement will be ignored.
+If the B<level> for the C<$log> object is set lower than B<warn>, the above log statement will never make it to any log file, or database.
 
-But, you have still C<Dumped> an entire data-structure.
+But you have still C<Dumped> an entire data-structure, just in case.
 
-C<Log::AutoDump> takes the C<Dumping> process out of your hands.
+We take the B<dumping> process out of your hands.
 
-The above statement now becomes...
+The above statement becomes...
 
  $log->warn( "Some object:", $obj, "Did you like that?" );
 
-Which is easier to read/write for a start, but also depending on the C<$log-\>dumps> flag will either be dumped or not.
-
-The C<dumps> option is on by default.
+Which is easier to read/write for a start, but will also B<dump> the C<obj>.
 
 We use L<Data::Dumper> by default.
 
-You can also control the C<$Data::Dumper::Maxdepth> by setting the C<dump_depth> attribute at construction time, or later.
+You can also control the C<$Data::Dumper::Maxdepth> by setting the C<dump_depth> attribute at construction time, and/or change it later.
 
  $log = Log::AutoDump->new( dump_depth => 3 );
  
  $log->dump_depth( 1 );
 
-This becomes useful when dealing with references/objects that may contain things like L<DateTime> objects, which are themselves huge.  
+This is useful when dealing with some references/objects that may contain things like L<DateTime> objects, which are themselves huge.  
 
 =cut
 
@@ -95,7 +97,7 @@ This becomes useful when dealing with references/objects that may contain things
 
 Creates a new logger object.
 
- my $log = Log::AutoDump->new;
+ my $log = Log::AutoDump->new( level => 3, dumps => 1, dump_depth => 2 );
 
 =cut
 
@@ -139,7 +141,7 @@ sub new
 
 =head3 level
 
-Sets the log level for the current instance.
+Changes the log level for the current instance.
 
  $log->level( 3 );
 
@@ -154,7 +156,7 @@ sub level
 
 =head3 dumps
 
-Controls whether references/objects are dumped or not.
+Controls whether references and objects are dumped or not.
 
  $log->dumps( 1 );
 
@@ -169,7 +171,7 @@ sub dumps
 
 =head3 dump_depth
 
-Set the dump-depth.
+Set the C<$Data::Dumper::Maxdepth>.
 
  $log->dump_depth( 3 );
 
@@ -212,12 +214,12 @@ This method expects a log level as the first argument, followed by a list of log
 
 This is the core method called by the following (preferred) methods, using the below mapping...
 
- FATAL => 0;
- ERROR => 1;
- WARN  => 2;
- INFO  => 3;
- DEBUG => 4;
- TRACE => 5;
+ TRACE => 5
+ DEBUG => 4
+ INFO  => 3
+ WARN  => 2
+ ERROR => 1
+ FATAL => 0
 
 =cut
 
@@ -491,7 +493,7 @@ sub is_fatal
 
 =head1 TODO
 
-simple scripts
+simple scripts (the caller stack)
 
 
 
