@@ -32,11 +32,11 @@ Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 $VERSION = eval $VERSION;
 
@@ -97,9 +97,7 @@ This is useful when dealing with some references or objects that may contain thi
 
 Creates a new logger object.
 
- my $log = Log::AutoDump->new( level => 3, dumps => 1, dump_depth => 2, datestamp_filename => 0 );
-
-By default log filenames will have the current datestamp prefixed, to turn this off, set the flag to false at construction time.
+ my $log = Log::AutoDump->new( level => 3, dumps => 1, dump_depth => 2, datestamp_filename => 1 );
 
 =cut
 

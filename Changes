@@ -1,5 +1,7 @@
 Revision history for Log-AutoDump
 
+0.05    datestamp filename is not default
+
 0.04    24 April 2012 - datestamping of filename and fixed minor bugs
 
 0.03    Tiny POD changes
