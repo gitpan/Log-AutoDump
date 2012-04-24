@@ -32,11 +32,11 @@ Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 $VERSION = eval $VERSION;
 
@@ -97,14 +97,16 @@ This is useful when dealing with some references or objects that may contain thi
 
 Creates a new logger object.
 
- my $log = Log::AutoDump->new( level => 3, dumps => 1, dump_depth => 2 );
+ my $log = Log::AutoDump->new( level => 3, dumps => 1, dump_depth => 2, datestamp_filename => 0 );
+
+By default log filenames will have the current datestamp prefixed, to turn this off, set the flag to false at construction time.
 
 =cut
 
 sub new
 {
 	my ( $class, %args ) = @_;
-	
+
 	if ( 1 )   # possibly use db backend later
 	{
 		my $path = $ENV{LOG_AUTODUMP_BASE_DIR} || $args{ base_dir } || DEFAULT_BASE_DIR;
@@ -113,17 +115,28 @@ sub new
 
 		my $filename = delete $args{filename} || $0;
 	
-		$filename =~ s/^.//;
+		$filename =~ s/^\.//;
 	
 		$filename =~ s/[\s\/]/-/g;
 
 		$filename =~ s/^-//;
 
+		if ( $args{ datestamp_filename } )
+		{
+			my ( undef, undef, undef, $day, $mon, $year, undef, undef, undef ) = localtime( time );
+
+			$mon++;
+			$mon =~ s/^(\d)$/0$1/;
+			$day =~ s/^(\d)$/0$1/;
+		
+			$filename = ( $year + 1900 ) . $mon . $day . '-' . $filename;
+		}
+		
 		$args{filename} = $path . $filename;
 	}
 		
-	my $self = {  level      => $args{ level } || DEFAULT_LEVEL,
-	              dumps      => $args{ dumps } || 1,
+	my $self = {  level      => exists $args{ level } ? $args{ level } : DEFAULT_LEVEL,
+	              dumps      => exists $args{ dumps } ? $args{ dumps } : 1,
 	              dump_depth => $args{ dump_depth } || 0,
 	              filename   => $args{ filename },
 	             _fh         => undef,
@@ -260,6 +273,8 @@ sub msg
 
 		$subroutine =~ s/::__ANON__$//;
 
+		$subroutine =~ s/^ModPerl::ROOT::ModPerl::Registry::(.*)$/$1/;
+		
 		last;
 	}
 	
@@ -269,7 +284,14 @@ sub msg
 	
 	my ( $sec, $min, $hour, $day, $mon, $year, undef, undef, undef ) = localtime( time );
 
-	my $datetime = ( $year + 1900 ) . '/' . ( $mon + 1 ) . '/' . $day . ' ' . $hour . ':' . $min . ':' . $sec;
+	$mon++;
+	$mon =~ s/^(\d)$/0$1/;
+	$day =~ s/^(\d)$/0$1/;
+	$hour =~ s/^(\d)$/0$1/;
+	$min =~ s/^(\d)$/0$1/;
+	$sec =~ s/^(\d)$/0$1/;
+	
+	my $datetime = ( $year + 1900 ) . '/' . $mon . '/' . $day . ' ' . $hour . ':' . $min . ':' . $sec;
                                                 
 	my $prefix = join( ' ', $datetime, $LEVELS{ $level }, $subroutine, '(' . $line . ')' ) . ' - ';
 
@@ -338,7 +360,7 @@ sub msg
 				}
 				else
 				{
-					$msg .= $prefix . "<< NOT DUMPING OBJECT/REFERENCE [ " . $label . " ] >>";
+					$msg .= $prefix . "NOT DUMPING [ " . $label . " ]";
 				}
 #			}
 		}
