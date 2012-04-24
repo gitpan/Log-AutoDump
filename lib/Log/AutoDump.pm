@@ -32,11 +32,11 @@ Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 $VERSION = eval $VERSION;
 
@@ -48,7 +48,7 @@ Logging as usual, but with automatic dumping of references and objects.
 
  my $log = Log::AutoDump->new;
     
- $log->msg( 4, "Logging at level 4", $ref, $hashref );
+ $log->msg( 4, "Logging at level 4 (debug)", $ref, $hashref );
 
  $log->warn( "Logging at warn level (2)", \@somelist, "Did you see that list?!" )
  
@@ -66,7 +66,7 @@ For example...
 
 If the B<level> for the C<$log> object is set lower than B<warn>, the above log statement will never make it to any log file, or database.
 
-But you have still C<Dumped> an entire data-structure, just in case.
+Unfortunately, you have still C<Dumped> an entire data-structure, just in case.
 
 We take the dumping process out of your hands.
 
@@ -238,7 +238,7 @@ sub msg
 {
 	my ( $self, $level, @things ) = @_;
 
-	$Data::Dumper::Maxdepth = $self->dump_depth;
+	local $Data::Dumper::Maxdepth = $self->dump_depth;
 	
 	if ( $level !~ /^\d+$/ )
 	{
