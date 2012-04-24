@@ -1,5 +1,7 @@
 Revision history for Log-AutoDump
 
+0.08    include the pid in the prefix
+
 0.07    flexible sorting and quoting keys
 
 0.06    dump depth is local

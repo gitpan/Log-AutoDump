@@ -30,11 +30,11 @@ Log::AutoDump - Log with automatic dumping of references and objects.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 $VERSION = eval $VERSION;
 
@@ -334,7 +334,7 @@ sub msg
 	
 	my $datetime = ( $year + 1900 ) . '/' . $mon . '/' . $day . ' ' . $hour . ':' . $min . ':' . $sec;
                                                 
-	my $prefix = join( ' ', $datetime, $LEVELS{ $level }, $subroutine, '(' . $line . ')' ) . ' - ';
+	my $prefix = join( ' ', $datetime, $$, $LEVELS{ $level }, $subroutine, '(' . $line . ')' ) . ' - ';
 
 	my $msg = '';
 
